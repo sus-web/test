@@ -19,7 +19,7 @@
   --card-border: rgba(255, 255, 255, 0.14);
   --shadow-glow: 0 20px 60px -20px rgba(201, 160, 255, 0.35);
 
-  --font-display: 'Marck Script', 'Caveat', 'Cormorant Garamond', cursive, serif;
+  --font-display: 'Marck Script', 'Caveat', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -368,25 +368,42 @@ section {
 .hero__name {
   font-family: var(--font-display);
   font-weight: 400;
+  font-style: italic;
   font-size: clamp(80px, 25vw, 170px);
   line-height: 1;
   letter-spacing: 0.02em;
   margin: 0;
-  background: linear-gradient(
-    100deg,
-    var(--accent-rose) 0%,
-    var(--accent-gold) 30%,
-    #fff 50%,
-    var(--accent-lilac) 70%,
-    var(--accent-rose) 100%
-  );
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-          background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: shimmer 6s ease-in-out infinite;
-  filter: drop-shadow(0 0 40px rgba(255, 179, 199, 0.3)) drop-shadow(0 0 80px rgba(201, 160, 255, 0.2));
+  color: #ffd6e0;
+  text-shadow:
+    0 0 20px rgba(255, 179, 199, 0.6),
+    0 0 40px rgba(201, 160, 255, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: namePulse 4s ease-in-out infinite;
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  @media (min-width: 1px) {
+    .hero__name.gradient-ok {
+      background: linear-gradient(
+        100deg,
+        var(--accent-rose) 0%,
+        var(--accent-gold) 30%,
+        #fff 50%,
+        var(--accent-lilac) 70%,
+        var(--accent-rose) 100%
+      );
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+              background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 6s ease-in-out infinite, namePulse 4s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes namePulse {
+  0%, 100% { filter: drop-shadow(0 0 30px rgba(255, 179, 199, 0.4)); }
+  50%      { filter: drop-shadow(0 0 50px rgba(201, 160, 255, 0.6)); }
 }
 
 @keyframes shimmer {
