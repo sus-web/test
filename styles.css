@@ -19,7 +19,7 @@
   --card-border: rgba(255, 255, 255, 0.14);
   --shadow-glow: 0 20px 60px -20px rgba(201, 160, 255, 0.35);
 
-  --font-display: 'Pinyon Script', 'Cormorant Garamond', serif;
+  --font-display: 'Marck Script', 'Caveat', 'Cormorant Garamond', cursive, serif;
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
 }
