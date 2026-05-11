@@ -12,6 +12,16 @@
     rel="stylesheet"
   />
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    @-webkit-keyframes letterFloat {
+      0%, 100% { -webkit-transform: translateY(0); transform: translateY(0); }
+      50% { -webkit-transform: translateY(-12px); transform: translateY(-12px); }
+    }
+    @keyframes letterFloat {
+      0%, 100% { -webkit-transform: translateY(0); transform: translateY(0); }
+      50% { -webkit-transform: translateY(-12px); transform: translateY(-12px); }
+    }
+  </style>
 </head>
 <body>
   <!-- Фоновые слои -->
@@ -47,8 +57,8 @@
   <section class="hero" id="hero">
     <div class="hero__inner">
       <p class="hero__eyebrow reveal">для той самой</p>
-      <h1 class="hero__name" style="color: #ffffff !important; opacity: 1 !important; -webkit-text-fill-color: #ffffff !important; font-family: 'Pinyon Script', 'Dancing Script', 'Segoe Script', 'Bradley Hand', cursive; font-size: 96px; line-height: 1.1; margin: 0; text-shadow: 0 0 20px #ffb3c7, 0 0 40px #c9a0ff, 0 2px 6px rgba(0,0,0,0.5);">
-        Лизка
+      <h1 class="hero__name" style="color: #ffffff; opacity: 1; -webkit-text-fill-color: #ffffff; font-family: 'Pinyon Script', 'Dancing Script', 'Segoe Script', 'Bradley Hand', cursive; font-size: 96px; line-height: 1.1; margin: 0; text-shadow: 0 0 20px #ffb3c7, 0 0 40px #c9a0ff, 0 2px 6px rgba(0,0,0,0.5);">
+        <span style="display:inline-block;-webkit-animation:letterFloat 4s ease-in-out infinite;animation:letterFloat 4s ease-in-out infinite;-webkit-animation-delay:0s;animation-delay:0s;">Л</span><span style="display:inline-block;-webkit-animation:letterFloat 4s ease-in-out infinite;animation:letterFloat 4s ease-in-out infinite;-webkit-animation-delay:0.3s;animation-delay:0.3s;">и</span><span style="display:inline-block;-webkit-animation:letterFloat 4s ease-in-out infinite;animation:letterFloat 4s ease-in-out infinite;-webkit-animation-delay:0.6s;animation-delay:0.6s;">з</span><span style="display:inline-block;-webkit-animation:letterFloat 4s ease-in-out infinite;animation:letterFloat 4s ease-in-out infinite;-webkit-animation-delay:0.9s;animation-delay:0.9s;">к</span><span style="display:inline-block;-webkit-animation:letterFloat 4s ease-in-out infinite;animation:letterFloat 4s ease-in-out infinite;-webkit-animation-delay:1.2s;animation-delay:1.2s;">а</span>
       </h1>
       <div class="hero__divider reveal"><span></span><i>⚜</i><span></span></div>
       <p class="hero__subtitle reveal">
