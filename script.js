@@ -28,8 +28,8 @@
   }
 
   /* ---------- 2. Countdown ---------- */
-  // Встреча: 13 мая 2026, 18:00 по Москве (UTC+3 → 15:00 UTC)
-  const target = new Date(Date.UTC(2026, 4, 13, 15, 0, 0));
+  // Встреча: 13 мая 2026, 17:30 по Москве (UTC+3 → 14:30 UTC)
+  const target = new Date(Date.UTC(2026, 4, 13, 14, 30, 0));
 
   const els = {
     days: document.getElementById('cdDays'),
@@ -66,7 +66,6 @@
         els[key].textContent = text;
         if (prev[key] !== null && !prefersReducedMotion) {
           els[key].classList.remove('tick');
-          // force reflow to restart animation
           void els[key].offsetWidth;
           els[key].classList.add('tick');
         }
@@ -80,7 +79,7 @@
   /* ---------- 3. Reply buttons ---------- */
   const result = document.getElementById('replyResult');
   const messages = {
-    yes: 'ура ✨ тогда до среды, 18:00',
+    yes: 'ура ✨ тогда до среды, 17:30!',
     maybe: 'хорошо, я подожду твоего ответа 🌙',
   };
 
@@ -98,28 +97,29 @@
     const rect = origin.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 24; i++) {
       const heart = document.createElement('span');
-      heart.textContent = ['❤', '✦', '✿', '♡'][i % 4];
+      heart.textContent = ['❤', '✦', '✿', '♡', '⭐', '💫'][i % 6];
+      heart.className = 'burst-particle';
       heart.style.cssText = `
         position: fixed;
         left: ${cx}px;
         top: ${cy}px;
-        color: ${['#ffb3c7', '#f6d6a8', '#c9a0ff', '#fff'][i % 4]};
-        font-size: ${12 + Math.random() * 14}px;
+        color: ${['#ffb3c7', '#f6d6a8', '#c9a0ff', '#fff', '#8ad8ff', '#ffb3c7'][i % 6]};
+        font-size: ${14 + Math.random() * 18}px;
         pointer-events: none;
         z-index: 100;
         transform: translate(-50%, -50%);
-        transition: transform 1.4s cubic-bezier(0.2,0.8,0.2,1), opacity 1.4s ease;
+        transition: transform 1.6s cubic-bezier(0.2,0.8,0.2,1), opacity 1.6s ease;
       `;
       document.body.appendChild(heart);
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 90 + Math.random() * 90;
+      const angle = (Math.PI * 2 * i) / 24 + (Math.random() - 0.5) * 0.3;
+      const dist = 100 + Math.random() * 120;
       requestAnimationFrame(() => {
-        heart.style.transform = `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist - 40}px)) rotate(${(Math.random()-0.5)*90}deg)`;
+        heart.style.transform = `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist - 60}px)) rotate(${(Math.random()-0.5)*120}deg) scale(${0.3 + Math.random() * 0.7})`;
         heart.style.opacity = '0';
       });
-      setTimeout(() => heart.remove(), 1500);
+      setTimeout(() => heart.remove(), 1800);
     }
   }
 
@@ -141,18 +141,19 @@
   resizeBg();
   window.addEventListener('resize', resizeBg);
 
-  const bgCount = Math.min(60, Math.floor((bgW * bgH) / 18000));
+  const bgCount = Math.min(80, Math.floor((bgW * bgH) / 14000));
   const particles = [];
   for (let i = 0; i < bgCount; i++) {
     particles.push({
       x: Math.random() * bgW,
       y: Math.random() * bgH,
-      r: 0.6 + Math.random() * 1.8,
-      vx: (Math.random() - 0.5) * 0.15,
-      vy: -0.1 - Math.random() * 0.25,
-      a: 0.15 + Math.random() * 0.55,
+      r: 0.5 + Math.random() * 2.2,
+      vx: (Math.random() - 0.5) * 0.2,
+      vy: -0.08 - Math.random() * 0.3,
+      a: 0.12 + Math.random() * 0.6,
       twinkle: Math.random() * Math.PI * 2,
-      color: ['255,179,199', '246,214,168', '201,160,255', '255,255,255'][Math.floor(Math.random() * 4)],
+      twinkleSpeed: 0.015 + Math.random() * 0.03,
+      color: ['255,179,199', '246,214,168', '201,160,255', '255,255,255', '138,216,255'][Math.floor(Math.random() * 5)],
     });
   }
 
@@ -161,16 +162,16 @@
     for (const p of particles) {
       p.x += p.vx;
       p.y += p.vy;
-      p.twinkle += 0.03;
+      p.twinkle += p.twinkleSpeed;
       if (p.y < -10) { p.y = bgH + 10; p.x = Math.random() * bgW; }
       if (p.x < -10) p.x = bgW + 10;
       if (p.x > bgW + 10) p.x = -10;
-      const alpha = p.a * (0.6 + 0.4 * Math.sin(p.twinkle));
+      const alpha = p.a * (0.5 + 0.5 * Math.sin(p.twinkle));
       bgCtx.beginPath();
       bgCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       bgCtx.fillStyle = `rgba(${p.color},${alpha})`;
-      bgCtx.shadowBlur = 8;
-      bgCtx.shadowColor = `rgba(${p.color},${alpha * 0.7})`;
+      bgCtx.shadowBlur = 12;
+      bgCtx.shadowColor = `rgba(${p.color},${alpha * 0.8})`;
       bgCtx.fill();
     }
     bgCtx.shadowBlur = 0;
@@ -178,104 +179,21 @@
   }
   drawBg();
 
-  /* ---------- 5. Fountain canvas ---------- */
-  const fcanvas = document.getElementById('fountainCanvas');
-  const fctx = fcanvas.getContext('2d');
-  let fW = 0, fH = 0;
-
-  function resizeFountain() {
-    const rect = fcanvas.getBoundingClientRect();
-    fW = rect.width;
-    fH = rect.height;
-    fcanvas.width = fW * DPR;
-    fcanvas.height = fH * DPR;
-    fctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  }
-
-  const drops = [];
-  const GRAVITY = 0.12;
-  const fountainJets = 9; // количество струй по окружности
-
-  function emitDrop() {
-    // Чаша фонтана — в нижней трети
-    const cx = fW / 2;
-    const cy = fH * 0.82;
-    // Выбираем угол из диапазона — струи идут веером
-    const jet = Math.floor(Math.random() * fountainJets);
-    const base = -Math.PI / 2; // вверх
-    const spread = Math.PI * 0.55;
-    const ang = base - spread / 2 + (jet / (fountainJets - 1)) * spread + (Math.random() - 0.5) * 0.08;
-    const power = 5.2 + Math.random() * 2.8;
-    drops.push({
-      x: cx + Math.cos(ang) * 4,
-      y: cy,
-      vx: Math.cos(ang) * power,
-      vy: Math.sin(ang) * power,
-      life: 0,
-      maxLife: 110 + Math.random() * 40,
-      r: 1.2 + Math.random() * 1.4,
-      hue: 195 + Math.random() * 25,
-    });
-  }
-
-  let fountainVisible = false;
-  const fSection = document.getElementById('fountains');
-  if ('IntersectionObserver' in window) {
-    const fio = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { fountainVisible = e.isIntersecting; }),
-      { threshold: 0.1 }
-    );
-    fio.observe(fSection);
-  } else {
-    fountainVisible = true;
-  }
-
-  function drawFountain() {
-    if (!fW || !fH) resizeFountain();
-
-    // slight trail for smooth motion blur
-    fctx.fillStyle = 'rgba(13, 6, 24, 0.25)';
-    fctx.fillRect(0, 0, fW, fH);
-
-    if (fountainVisible && !prefersReducedMotion) {
-      // Эмитим капли пачками
-      for (let i = 0; i < 6; i++) emitDrop();
+  /* ---------- 5. Fountain sparkles overlay ---------- */
+  const sparkleContainer = document.querySelector('.fountain-sparkles');
+  if (sparkleContainer && !prefersReducedMotion) {
+    function createSparkle() {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.left = `${10 + Math.random() * 80}%`;
+      sparkle.style.top = `${10 + Math.random() * 60}%`;
+      sparkle.style.animationDuration = `${1.5 + Math.random() * 2}s`;
+      sparkle.style.setProperty('--size', `${3 + Math.random() * 5}px`);
+      sparkleContainer.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 3500);
     }
-
-    for (let i = drops.length - 1; i >= 0; i--) {
-      const d = drops[i];
-      d.vy += GRAVITY;
-      d.x += d.vx;
-      d.y += d.vy;
-      d.life++;
-
-      const waterLine = fH * 0.82;
-      if (d.y > waterLine || d.life > d.maxLife || d.x < -20 || d.x > fW + 20) {
-        drops.splice(i, 1);
-        continue;
-      }
-
-      const alpha = Math.max(0, 1 - d.life / d.maxLife);
-      fctx.beginPath();
-      fctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-      fctx.fillStyle = `hsla(${d.hue}, 90%, 78%, ${0.55 * alpha})`;
-      fctx.shadowBlur = 10;
-      fctx.shadowColor = `hsla(${d.hue}, 95%, 75%, ${0.5 * alpha})`;
-      fctx.fill();
-    }
-    fctx.shadowBlur = 0;
-
-    requestAnimationFrame(drawFountain);
+    setInterval(createSparkle, 250);
   }
-
-  // Инициализация фонтана после раскладки
-  const initFountain = () => {
-    resizeFountain();
-    drawFountain();
-  };
-  if (document.readyState === 'complete') initFountain();
-  else window.addEventListener('load', initFountain);
-  window.addEventListener('resize', resizeFountain);
 
   /* ---------- 6. Ambient sound (toggle) ---------- */
   const soundBtn = document.getElementById('soundToggle');
@@ -290,8 +208,7 @@
       master.gain.value = 0;
       master.connect(audioCtx.destination);
 
-      // Лёгкий hum: две сцепленные синусоиды + триггеры — очень тихий, мечтательный
-      const freqs = [220, 277.18, 329.63]; // A3, C#4, E4 — мажорное трезвучие
+      const freqs = [220, 277.18, 329.63];
       const oscs = freqs.map((f, i) => {
         const o = audioCtx.createOscillator();
         o.type = 'sine';
@@ -309,9 +226,7 @@
         return { o, g, lfo };
       });
 
-      // Фейд-ин
       master.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 1.5);
-
       ambientNodes = { master, oscs };
     } catch (err) {
       console.warn('Audio unavailable', err);
@@ -350,10 +265,57 @@
       if (raf) return;
       raf = requestAnimationFrame(() => {
         const y = Math.min(window.scrollY, 600);
-        hero.style.transform = `translateY(${y * 0.18}px)`;
-        hero.style.opacity = String(Math.max(0, 1 - y / 500));
+        hero.style.transform = `translateY(${y * 0.22}px) scale(${1 - y * 0.0003})`;
+        hero.style.opacity = String(Math.max(0, 1 - y / 450));
         raf = 0;
       });
     }, { passive: true });
+  }
+
+  /* ---------- 8. Magnetic hover on buttons ---------- */
+  document.querySelectorAll('.btn--primary').forEach((btn) => {
+    if (prefersReducedMotion) return;
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      btn.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px) scale(1.04)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = '';
+    });
+  });
+
+  /* ---------- 9. Smooth section transitions with tilt ---------- */
+  if (!prefersReducedMotion) {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateZ(8px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
+
+  /* ---------- 10. Typing effect on hero eyebrow ---------- */
+  const eyebrow = document.querySelector('.hero__eyebrow');
+  if (eyebrow && !prefersReducedMotion) {
+    const text = eyebrow.textContent;
+    eyebrow.textContent = '';
+    eyebrow.style.opacity = '1';
+    let i = 0;
+    function typeChar() {
+      if (i < text.length) {
+        eyebrow.textContent += text[i];
+        i++;
+        setTimeout(typeChar, 80 + Math.random() * 60);
+      }
+    }
+    setTimeout(typeChar, 800);
   }
 })();
