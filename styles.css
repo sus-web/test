@@ -167,31 +167,173 @@ section {
   transform: translateY(0) scale(1);
 }
 
-/* ========== Sound toggle ========== */
+/* ========== Music player (vinyl) ========== */
 
-.sound-toggle {
+.music-player {
   position: fixed;
   top: max(16px, env(safe-area-inset-top));
-  right: 18px;
+  right: 16px;
   z-index: 10;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--card-border);
-  color: var(--ink);
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 100px;
+  background: rgba(13, 6, 24, 0.55);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+  color: var(--ink);
   cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
   transition: transform 0.3s ease, background 0.3s ease;
+  max-width: calc(100vw - 32px);
 }
-.sound-toggle:hover { transform: scale(1.08); background: rgba(255,255,255,0.14); }
-.sound-toggle .sound-on  { display: none; }
-.sound-toggle.is-on .sound-on  { display: block; }
-.sound-toggle.is-on .sound-off { display: none; }
+.music-player:hover { background: rgba(13, 6, 24, 0.7); transform: translateY(-1px); }
+.music-player:focus-visible { outline: 2px solid var(--accent-rose); outline-offset: 2px; }
+
+.music-player__vinyl {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+.music-player__disc {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  background: #0a0510;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.1),
+    0 2px 8px rgba(0,0,0,0.5),
+    inset 0 0 0 3px rgba(255,255,255,0.04);
+  animation: spin 4s linear infinite;
+  animation-play-state: paused;
+}
+.music-player.is-playing .music-player__disc { animation-play-state: running; }
+
+.music-player__album {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+  /* винтажные круги пластинки поверх обложки */
+  -webkit-mask-image: radial-gradient(circle, #000 0%, #000 100%);
+}
+.music-player__disc::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle at center,
+      rgba(0,0,0,0.25) 0 1px,
+      transparent 1px 3px);
+  pointer-events: none;
+  opacity: 0.5;
+}
+.music-player__hole {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #0d0618;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.music-player__icon {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--accent-gold);
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.music-player:hover .music-player__icon--play { opacity: 1; }
+.music-player.is-playing:hover .music-player__icon--play { opacity: 0; }
+.music-player.is-playing:hover .music-player__icon--pause { opacity: 1; }
+
+.music-player__info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  max-width: 160px;
+  overflow: hidden;
+}
+.music-player__artist {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.music-player__track {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.music-player__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+  flex-shrink: 0;
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+.music-player.is-playing .music-player__bars { opacity: 1; }
+.music-player__bars span {
+  display: block;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--accent-rose), var(--accent-gold));
+  border-radius: 2px;
+  transform-origin: bottom;
+  transform: scaleY(0.3);
+}
+.music-player.is-playing .music-player__bars span {
+  animation: eqBar 0.9s ease-in-out infinite;
+}
+.music-player__bars span:nth-child(1) { animation-delay: -0.1s; }
+.music-player__bars span:nth-child(2) { animation-delay: -0.4s; }
+.music-player__bars span:nth-child(3) { animation-delay: -0.2s; }
+.music-player__bars span:nth-child(4) { animation-delay: -0.6s; }
+
+@keyframes eqBar {
+  0%, 100% { transform: scaleY(0.3); }
+  50%      { transform: scaleY(1); }
+}
+
+@media (max-width: 420px) {
+  .music-player__info { max-width: 110px; }
+  .music-player__track { font-size: 12px; }
+}
 
 /* ========== HERO ========== */
 
@@ -226,7 +368,7 @@ section {
 .hero__name {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(96px, 30vw, 180px);
+  font-size: clamp(80px, 25vw, 170px);
   line-height: 1;
   letter-spacing: 0.02em;
   margin: 0;
@@ -260,6 +402,7 @@ section {
 .hero__name-letters span:nth-child(2) { animation-delay: 0.3s; }
 .hero__name-letters span:nth-child(3) { animation-delay: 0.6s; }
 .hero__name-letters span:nth-child(4) { animation-delay: 0.9s; }
+.hero__name-letters span:nth-child(5) { animation-delay: 1.2s; }
 
 @keyframes letterFloat {
   0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -746,12 +889,10 @@ section {
 
   .reply__buttons { flex-direction: row; justify-content: center; max-width: none; }
   .btn { padding: 18px 36px; }
-
-  .sound-toggle { width: 46px; height: 46px; right: 28px; }
 }
 
 @media (min-width: 1200px) {
-  .hero__name { font-size: clamp(160px, 18vw, 240px); }
+  .hero__name { font-size: clamp(140px, 15vw, 220px); }
   .section__title { font-size: 56px; }
 }
 

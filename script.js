@@ -195,67 +195,61 @@
     setInterval(createSparkle, 250);
   }
 
-  /* ---------- 6. Ambient sound (toggle) ---------- */
-  const soundBtn = document.getElementById('soundToggle');
-  let audioCtx = null;
-  let ambientNodes = null;
+  /* ---------- 6. Music player (vinyl with real audio) ---------- */
+  const player = document.getElementById('musicPlayer');
+  const audio = document.getElementById('musicAudio');
 
-  function startAmbient() {
-    if (ambientNodes) return;
-    try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const master = audioCtx.createGain();
-      master.gain.value = 0;
-      master.connect(audioCtx.destination);
+  if (player && audio) {
+    audio.volume = 0.45;
 
-      const freqs = [220, 277.18, 329.63];
-      const oscs = freqs.map((f, i) => {
-        const o = audioCtx.createOscillator();
-        o.type = 'sine';
-        o.frequency.value = f;
-        const g = audioCtx.createGain();
-        g.gain.value = 0.08 + i * 0.02;
-        const lfo = audioCtx.createOscillator();
-        lfo.frequency.value = 0.1 + i * 0.05;
-        const lfoGain = audioCtx.createGain();
-        lfoGain.gain.value = 0.03;
-        lfo.connect(lfoGain).connect(g.gain);
-        o.connect(g).connect(master);
-        o.start();
-        lfo.start();
-        return { o, g, lfo };
-      });
+    const setPlaying = (on) => player.classList.toggle('is-playing', on);
 
-      master.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 1.5);
-      ambientNodes = { master, oscs };
-    } catch (err) {
-      console.warn('Audio unavailable', err);
-    }
+    audio.addEventListener('play', () => setPlaying(true));
+    audio.addEventListener('pause', () => setPlaying(false));
+    audio.addEventListener('ended', () => setPlaying(false));
+
+    const toggle = () => {
+      if (audio.paused) {
+        audio.play().catch((err) => console.warn('Audio play blocked:', err));
+      } else {
+        audio.pause();
+      }
+    };
+
+    player.addEventListener('click', toggle);
+    player.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+    });
+
+    // Попытка автозапуска. Большинство браузеров блокирует без мьюта,
+    // поэтому пробуем: сначала без мьюта (вдруг разрешено), потом в тишине,
+    // и в любом случае подхватываем первый клик/тап юзера, чтобы запустить со звуком.
+    const tryAutoplay = async () => {
+      try {
+        await audio.play();
+      } catch (_) {
+        try {
+          audio.muted = true;
+          await audio.play();
+        } catch (__) { /* автозапуск запрещён — ждём жеста */ }
+      }
+    };
+    tryAutoplay();
+
+    const firstGesture = () => {
+      if (audio.muted) audio.muted = false;
+      if (audio.paused) audio.play().catch(() => {});
+      window.removeEventListener('pointerdown', firstGesture);
+      window.removeEventListener('keydown', firstGesture);
+      window.removeEventListener('touchstart', firstGesture);
+    };
+    window.addEventListener('pointerdown', firstGesture, { once: false });
+    window.addEventListener('keydown', firstGesture, { once: false });
+    window.addEventListener('touchstart', firstGesture, { once: false, passive: true });
   }
-
-  function stopAmbient() {
-    if (!ambientNodes || !audioCtx) return;
-    const { master } = ambientNodes;
-    master.gain.cancelScheduledValues(audioCtx.currentTime);
-    master.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6);
-    setTimeout(() => {
-      try { audioCtx.close(); } catch (_) {}
-      audioCtx = null;
-      ambientNodes = null;
-    }, 800);
-  }
-
-  soundBtn.addEventListener('click', () => {
-    if (soundBtn.classList.contains('is-on')) {
-      soundBtn.classList.remove('is-on');
-      soundBtn.setAttribute('aria-label', 'Включить звук');
-      stopAmbient();
-    } else {
-      soundBtn.classList.add('is-on');
-      soundBtn.setAttribute('aria-label', 'Выключить звук');
-      startAmbient();
-    }
-  });
 
   /* ---------- 7. Parallax hero на скролл ---------- */
   const hero = document.querySelector('.hero__inner');
