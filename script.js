@@ -7,19 +7,6 @@
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- 0. Feature detect: gradient text ---------- */
-  // На некоторых мобильных браузерах background-clip:text глючит и текст
-  // становится невидимым. Проверяем через canvas.
-  try {
-    const testEl = document.createElement('span');
-    testEl.style.cssText = 'background-clip:text;-webkit-background-clip:text;background:linear-gradient(#f00,#00f);color:transparent;-webkit-text-fill-color:transparent;';
-    const supports = CSS.supports('-webkit-background-clip', 'text') || CSS.supports('background-clip', 'text');
-    if (supports) {
-      const heroName = document.querySelector('.hero__name');
-      if (heroName) heroName.classList.add('gradient-ok');
-    }
-  } catch (_) { /* оставляем fallback */ }
-
   /* ---------- 1. Reveal on scroll ---------- */
   const revealEls = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window && !prefersReducedMotion) {
